@@ -1,6 +1,7 @@
 const Medicine = require("./models/Medicine");
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 mongoose.connect(
   "mongodb://inventraAdmin:Diksh%400605@ac-6izkicr-shard-00-00.rmsn84q.mongodb.net:27017,ac-6izkicr-shard-00-01.rmsn84q.mongodb.net:27017,ac-6izkicr-shard-00-02.rmsn84q.mongodb.net:27017/inventra?ssl=true&replicaSet=atlas-tk6u8j-shard-0&authSource=admin&retryWrites=true&w=majority"
@@ -9,6 +10,8 @@ mongoose.connect(
 .catch((err) => console.log(err));
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
