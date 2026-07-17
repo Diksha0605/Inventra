@@ -25,11 +25,27 @@ app.get("/", (req, res) => {
 
 app.post("/medicines", async (req, res) => {
     try {
-        const medicine = new Medicine(req.body);
+
+        // Find the medicine with the highest id
+        const lastMedicine = await Medicine.findOne().sort({ id: -1 });
+
+        // Generate next id
+        const nextId = lastMedicine ? lastMedicine.id + 1 : 1;
+
+        // Create medicine with auto-generated id
+        const medicine = new Medicine({
+            id: nextId,
+            name: req.body.name,
+            category: req.body.category,
+            company: req.body.company,
+            price: req.body.price,
+            quantity: req.body.quantity
+        });
 
         await medicine.save();
 
         res.send("Medicine Added Successfully");
+
     } catch (err) {
         console.log(err);
         res.status(500).send("Error Adding Medicine");
