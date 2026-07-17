@@ -19,6 +19,7 @@ function Dashboard() {
   const [medicines, setMedicines] = useState([]);
 
   const [name, setName] = useState("");
+  const [sortBy, setSortBy] = useState("default");
   const [category, setCategory] = useState("");
   const [company, setCompany] = useState("");
   const [price, setPrice] = useState("");
@@ -163,22 +164,43 @@ function Dashboard() {
     "#14b8a6",
   ];
 
-  const groupedMedicines = filteredMedicines
-  .sort((a, b) => {
-    if (a.category === b.category) {
-      return a.name.localeCompare(b.name);
-    }
-    return a.category.localeCompare(b.category);
-  })
-  .reduce((groups, medicine) => {
+  const groupedMedicines = filteredMedicines.reduce((groups, medicine) => {
     if (!groups[medicine.category]) {
       groups[medicine.category] = [];
     }
-
+    
     groups[medicine.category].push(medicine);
-
+    
     return groups;
   }, {});
+  // Sort medicines inside each category
+  
+  Object.keys(groupedMedicines).forEach((category) => {
+    groupedMedicines[category].sort((a, b) => {
+      switch (sortBy) {
+        case "az":
+          return a.name.localeCompare(b.name);
+          
+        case "za":
+          return b.name.localeCompare(a.name);
+
+        case "priceLow":
+          return a.price - b.price;
+
+        case "priceHigh":
+          return b.price - a.price;
+
+        case "quantityLow":
+          return a.quantity - b.quantity;
+
+        case "quantityHigh":
+          return b.quantity - a.quantity;
+          
+          default:
+            return a.name.localeCompare(b.name);
+      }
+    });
+  });
 
   const totalStock = medicines.reduce(
     (sum, medicine) => sum + medicine.quantity,
@@ -393,6 +415,19 @@ function Dashboard() {
         </select>
 
       </div>
+
+      <select
+      value={sortBy}
+      onChange={(e) => setSortBy(e.target.value)}
+      >
+        <option value="default">Sort By</option>
+        <option value="az">A → Z</option>
+        <option value="za">Z → A</option>
+        <option value="priceLow">Price: Low to High</option>
+        <option value="priceHigh">Price: High to Low</option>
+        <option value="quantityLow">Quantity: Low to High</option>
+        <option value="quantityHigh">Quantity: High to Low</option>
+      </select>
 
       <div>
         {Object.keys(groupedMedicines).map((category) => (
